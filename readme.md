@@ -1,4 +1,3 @@
-```markdown
 # WP Changelog Injector
 
 A lightweight Bash utility to automatically generate and inject `git-cliff` changelog entries into WordPress-formatted `readme.md` / `readme.txt` files and standard `changelog.md` files upon release.
@@ -75,7 +74,5 @@ Make sure your target README file already contains the line `== Changelog ==`.
 | --- | --- | --- |
 | `--readme <path>` | `readme.md` | Path to the target WordPress README file containing `== Changelog ==`. |
 | `--changelog <path>` | `changelog.md` | Path to the standard markdown changelog file. |
-
-```
 
 ```
