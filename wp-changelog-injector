@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+
+readmeFile=readme.md
+changelogFile=changelog.md
+
+function fail() {
+    echo "$1" 1>&2
+    exit 1
+}
+
+function print-usage() {
+    cat << USAGE
+Default readme: $readmeFile
+Default changelog: $changelogFile
+USAGE
+
+    fail "usage: $0 [--readme path] [--changelog path]"
+}
+
+while [[ "$#" -gt 0 ]]; do
+    case "$1" in
+        --readme)
+            readmeFile="$2"
+            [[ -z "$readmeFile" ]] && print-usage
+            shift 2
+        ;;
+        --changelog)
+            changelogFile="$2"
+            [[ -z "$changelogFile" ]] && print-usage
+            
+            shift 2
+        ;;
+        *)
+            print-usage
+        ;;
+    esac
+done
+
+if ! [[ -f "$readmeFile" ]]; then
+    fail "readme file: $readmeFile doesn't exist"
+fi
+
+# gets the changelog since the previous stable tag. if none (for first version releases) gets the latest.
+prevOrCurrentTag="$(versions-finder stable --previous-or-latest)"
+wpChangelog="$(git-cliff --config wp-cliff.toml "$prevOrCurrentTag"..HEAD)"
+
+# now literally just put it in the changelog and call it a day
+# unfortunately thought we have to read the whole file first for substitution
+ogReadme="$(cat "$readmeFile")"
+newReadme="${ogReadme/== Changelog ==/$wpChangelog}"
+
+printf '%s' "$newReadme" > "$readmeFile"
+
+echo "Updated readme $readmeFile with updated changelog!"
+
+# now just update the default changelog
+
+stdChangelog="$(git-cliff "$prevOrCurrentTag"..HEAD)"
+
+# make sure it exists
+ogChangelog="$(cat "$changelogFile")" 1>/dev/null 2>&1
+
+[[ "$?" -gt 0 ]] && touch "$changelogFile"
+
+printf '%s\n%s' "$stdChangelog" "$ogChangelog" > "$changelogFile"
+
+
+

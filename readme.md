@@ -1,0 +1,81 @@
+```markdown
+# WP Changelog Injector
+
+A lightweight Bash utility to automatically generate and inject `git-cliff` changelog entries into WordPress-formatted `readme.md` / `readme.txt` files and standard `changelog.md` files upon release.
+
+## Requirements
+
+Ensure the following tools are installed and available in your `$PATH`:
+
+* **[git-cliff](https://github.com/orhun/git-cliff)** – Fast, customizable changelog generator.
+* **[versions-finder](https://github.com/neblabs/versions-finder)** – CLI utility to resolve target Git version tags.
+
+## How It Works
+
+This script is designed to run **post-tag** (immediately after tagging a new release):
+
+1. **Tag Resolution:** Uses `versions-finder stable --previous-or-latest` to determine the previous tag range (`<prev-tag>..HEAD`).
+2. **WordPress Format Injection:** Generates WordPress-compliant release notes via `git-cliff` using `wp-cliff.toml` and replaces the `== Changelog ==` section inside your target README file.
+3. **Standard Changelog Prepend:** Runs `git-cliff` and prepends the new release log to the top of `changelog.md`.
+
+---
+
+## Configuration
+
+Create a `wp-cliff.toml` configuration file in your project root to control the WordPress output format:
+
+```toml
+[git]
+commit_parsers = [
+  { message = "^feat", group = "Features" },
+  { message = "^fix", group = "Bug Fixes" },
+  { message = "^doc", group = "Documentation" },
+  { message = "^refactor", group = "Code Improvements" },
+]
+
+[changelog]
+header = "== Changelog ==\n"
+body = """
+{% if version -%}
+= {{ version | trim_start_matches(pat="v") }} =
+{% else -%}
+= Unreleased =
+{% endif -%}
+
+{% for group, commits in commits | group_by(attribute="group") -%}
+**{{ group | replace(from="1_", to="") | replace(from="2_", to="") | replace(from="3_", to="") }}**
+{% for commit in commits -%}
+* {{ commit.message | upper_first }}
+{% endfor -%}
+
+{% endfor -%}
+"""
+trim = false
+
+```
+
+---
+
+## Usage
+
+Make sure your target README file already contains the line `== Changelog ==`.
+
+```bash
+# Run with default paths (readme.md and changelog.md)
+./update-changelog.sh
+
+# Specify custom file paths
+./update-changelog.sh --readme plugin/readme.txt --changelog CHANGELOG.md
+
+```
+
+### Options
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `--readme <path>` | `readme.md` | Path to the target WordPress README file containing `== Changelog ==`. |
+| `--changelog <path>` | `changelog.md` | Path to the standard markdown changelog file. |
+
+```
+
+```
