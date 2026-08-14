@@ -11,9 +11,9 @@ Ensure the following tools are installed and available in your `$PATH`:
 
 ## How It Works
 
-This script is designed to run **post-tag** (immediately after tagging a new release):
+This script is designed to run **post-tag** (after tagging a new release).
 
-1. **Tag Resolution:** Uses `versions-finder stable --previous-or-latest` to determine the previous tag range (`<prev-tag>..HEAD`).
+1. **Tag Resolution:** Uses `versions-finder stable --previous-or-latest` to determine the previous tag range (`<prev-tag>..HEAD`). It will get all the changes from the previous tag or the current if there's only one tag (new repo).
 2. **WordPress Format Injection:** Generates WordPress-compliant release notes via `git-cliff` using `wp-cliff.toml` and replaces the `== Changelog ==` section inside your target README file.
 3. **Standard Changelog Prepend:** Runs `git-cliff` and prepends the new release log to the top of `changelog.md`.
 
