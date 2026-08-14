@@ -7,15 +7,35 @@ A lightweight Bash utility to automatically generate and inject `git-cliff` chan
 Ensure the following tools are installed and available in your `$PATH`:
 
 * **[git-cliff](https://github.com/orhun/git-cliff)** – Fast, customizable changelog generator.
-* **[versions-finder](https://github.com/neblabs/versions-finder)** – CLI utility to resolve target Git version tags.
+* **[wp-changelog-injector](https://github.com/neblabs/wp-changelog-injector)** – CLI utility to resolve target Git version tags.
 
 ## How It Works
 
 This script is designed to run **post-tag** (after tagging a new release).
 
-1. **Tag Resolution:** Uses `versions-finder stable --previous-or-latest` to determine the previous tag range (`<prev-tag>..HEAD`). It will get all the changes from the previous tag or the current if there's only one tag (new repo).
+1. **Tag Resolution:** Uses `wp-changelog-injector stable --previous-or-latest` to determine the previous tag range (`<prev-tag>..HEAD`). It will get all the changes from the previous tag or the current if there's only one tag (new repo).
 2. **WordPress Format Injection:** Generates WordPress-compliant release notes via `git-cliff` using `wp-cliff.toml` and replaces the `== Changelog ==` section inside your target README file.
 3. **Standard Changelog Prepend:** Runs `git-cliff` and prepends the new release log to the top of `changelog.md`.
+
+---
+
+A. Run the installer
+
+```bash
+curl -L https://raw.githubusercontent.com/neblabs/wp-changelog-injector/main/install.sh | sh
+
+# make sure ~/.local/bin/ is in your PATH.
+```
+
+B. ...Or install it manually
+
+```bash
+sudo curl -sSL https://raw.githubusercontent.com/neblabs/wp-changelog-injector/main/wp-changelog-injector.sh -o "$HOME"/.local/bin/wp-changelog-injector
+
+sudo chmod +x "$HOME"/.local/bin/wp-changelog-injector
+
+# and make sure ~/.local/bin/ is in your PATH.
+```
 
 ---
 
