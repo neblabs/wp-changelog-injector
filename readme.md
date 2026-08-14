@@ -19,6 +19,8 @@ This script is designed to run **post-tag** (after tagging a new release).
 
 ---
 
+## Installation
+
 A. Run the installer
 
 ```bash
