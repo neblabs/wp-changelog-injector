@@ -7,7 +7,7 @@ A lightweight Bash utility to automatically generate and inject `git-cliff` chan
 Ensure the following tools are installed and available in your `$PATH`:
 
 * **[git-cliff](https://github.com/orhun/git-cliff)** – Fast, customizable changelog generator.
-* **[wp-changelog-injector](https://github.com/neblabs/wp-changelog-injector)** – CLI utility to resolve target Git version tags.
+* **[versions-finder](https://github.com/neblabs/versions-finder)** – CLI utility to resolve target Git version tags. Automatically installed using the installed bellow.
 
 ## How It Works
 
@@ -21,7 +21,7 @@ This script is designed to run **post-tag** (after tagging a new release).
 
 ## Installation
 
-A. Run the installer (dependencies are not installed!)
+A. Run the installer (git-cliff needs to be installed separately, versions finder will be installed)
 
 ```bash
 curl -L https://raw.githubusercontent.com/neblabs/wp-changelog-injector/main/install.sh | bash
