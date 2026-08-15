@@ -2,6 +2,7 @@
 
 readmeFile=readme.md
 changelogFile=changelog.md
+latest=false
 
 function fail() {
     echo "$1" 1>&2
@@ -14,7 +15,7 @@ Default readme: $readmeFile
 Default changelog: $changelogFile
 USAGE
 
-    fail "usage: $0 [--readme path] [--changelog path]"
+    fail "usage: $0 [--readme path] [--changelog path] [--latest]"
 }
 
 while [[ "$#" -gt 0 ]]; do
@@ -30,6 +31,10 @@ while [[ "$#" -gt 0 ]]; do
             
             shift 2
         ;;
+        --latest)
+            latest=true
+            shift
+        ;;
         *)
             print-usage
         ;;
@@ -41,8 +46,17 @@ if ! [[ -f "$readmeFile" ]]; then
 fi
 
 # gets the changelog since the previous stable tag. if none (for first version releases) gets the latest.
-prevOrCurrentTag="$(versions-finder stable --previous-or-latest)"
-wpChangelog="$(git-cliff --config wp-cliff.toml "$prevOrCurrentTag"..HEAD)"
+
+
+if "$latest" ; then
+    whichTag=--latest
+else
+    # here itll fetch the previous tag if no previous then the latest as a fallback eg on a new repo with only one tag
+    whichTag=--previous-or-latest
+fi
+tagRange="$(versions-finder stable "$whichTag")"..HEAD
+
+wpChangelog="$(git-cliff --config wp-cliff.toml "$tagRange")"
 
 # now literally just put it in the changelog and call it a day
 # unfortunately thought we have to read the whole file first for substitution
@@ -55,10 +69,10 @@ echo "Updated readme $readmeFile with updated changelog!"
 
 # now just update the default changelog
 
-stdChangelog="$(git-cliff "$prevOrCurrentTag"..HEAD)"
+stdChangelog="$(git-cliff "$tagRange")"
 
 # make sure it exists
-ogChangelog="$(cat "$changelogFile")" 1>/dev/null 2>&1
+ogChangelog="$(cat "$changelogFile" 2>&1)"
 
 [[ "$?" -gt 0 ]] && touch "$changelogFile"
 

@@ -96,5 +96,6 @@ wp-changelog-injector --readme plugin/readme.txt --changelog CHANGELOG.md
 | --- | --- | --- |
 | `--readme <path>` | `readme.md` | Path to the target WordPress README file containing `== Changelog ==`. |
 | `--changelog <path>` | `changelog.md` | Path to the standard markdown changelog file. |
+| `--latest` | false | Fetch from the latest (current) version instead of the previous |
 
 ```
