@@ -24,7 +24,7 @@ This script is designed to run **post-tag** (after tagging a new release).
 A. Run the installer (dependencies are not installed!)
 
 ```bash
-curl -L https://raw.githubusercontent.com/neblabs/wp-changelog-injector/main/install.sh | sh
+curl -L https://raw.githubusercontent.com/neblabs/wp-changelog-injector/main/install.sh | bash
 
 # make sure ~/.local/bin/ is in your PATH.
 ```
