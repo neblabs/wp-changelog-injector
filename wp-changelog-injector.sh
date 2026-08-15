@@ -56,7 +56,7 @@ else
 fi
 tagRange="$(versions-finder stable "$whichTag")"..HEAD
 
-wpChangelog="$(git-cliff --config   "$tagRange")"
+wpChangelog="$(git-cliff --config wp-cliff.toml "$tagRange")"
 
 # now literally just put it in the changelog and call it a day
 # unfortunately thought we have to read the whole file first for substitution
