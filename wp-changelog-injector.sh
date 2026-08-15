@@ -3,6 +3,7 @@
 readmeFile=readme.md
 changelogFile=changelog.md
 latest=false
+wpTomlFile=wp-cliff.toml
 
 function fail() {
     echo "$1" 1>&2
@@ -45,8 +46,41 @@ if ! [[ -f "$readmeFile" ]]; then
     fail "readme file: $readmeFile doesn't exist"
 fi
 
-# gets the changelog since the previous stable tag. if none (for first version releases) gets the latest.
+# let's add a default toml file if not in dir
 
+IFS='' read -r -d '' wpTomlConfig <<'EOF'
+[git]
+commit_parsers = [
+  { message = "^feat", group = "Features" },
+  { message = "^fix", group = "Bug Fixes" },
+  { message = "^doc", group = "Documentation" },
+  { message = "^refactor", group = "Code Improvements" },
+]
+
+[changelog]
+header = "== Changelog ==\n"
+body = """
+{% if version -%}
+= {{ version | trim_start_matches(pat="v") }} =
+{% else -%}
+= Unreleased =
+{% endif -%}
+
+{% for group, commits in commits | group_by(attribute="group") -%}
+**{{ group | replace(from="1_", to="") | replace(from="2_", to="") | replace(from="3_", to="") }}**
+{% for commit in commits -%}
+* {{ commit.message | upper_first }}
+{% endfor -%}
+
+{% endfor -%}
+"""
+trim = false
+EOF
+
+if ! [[ -f "$wpTomlFile" ]]; then
+    # then create i
+    echo "$wpTomlConfig" > "$wpTomlFile"
+fi
 
 if "$latest" ; then
     whichTag=--latest
@@ -56,7 +90,7 @@ else
 fi
 tagRange="$(versions-finder stable "$whichTag")"..HEAD
 
-wpChangelog="$(git-cliff --config wp-cliff.toml "$tagRange")"
+wpChangelog="$(git-cliff --config "$wpTomlFile" "$tagRange")"
 
 # now literally just put it in the changelog and call it a day
 # unfortunately thought we have to read the whole file first for substitution
