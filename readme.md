@@ -83,10 +83,10 @@ Make sure your target README file already contains the line `== Changelog ==`.
 
 ```bash
 # Run with default paths (readme.md and changelog.md)
-./update-changelog.sh
+wp-changelog-injector
 
 # Specify custom file paths
-./update-changelog.sh --readme plugin/readme.txt --changelog CHANGELOG.md
+wp-changelog-injector --readme plugin/readme.txt --changelog CHANGELOG.md
 
 ```
 
