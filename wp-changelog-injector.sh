@@ -53,8 +53,9 @@ IFS='' read -r -d '' wpTomlConfig <<'EOF'
 commit_parsers = [
   { message = "^feat", group = "Features" },
   { message = "^fix", group = "Bug Fixes" },
-  { message = "^doc", group = "Documentation" },
-  { message = "^refactor", group = "Code Improvements" },
+  { message = "^perf", group = "Performance Improvements" },
+  # Optional bulletproof catch-all: explicitly skip anything else
+  { message = "^.*", skip = true }
 ]
 
 [changelog]
