@@ -1,6 +1,6 @@
 # WP Changelog Injector
 
-A lightweight Bash utility to automatically generate and inject `git-cliff` changelog entries into WordPress-formatted `readme.md` / `readme.txt` files and standard `changelog.md` files upon release.
+A lightweight Bash utility to automatically generate and inject `git-cliff` changelog entries into WordPress-formatted `readme.md` / `readme.txt` files and standard `changelog.md` files upon release using conventional commits.
 
 ## Requirements
 
@@ -8,6 +8,8 @@ Ensure the following tools are installed and available in your `$PATH`:
 
 * **[git-cliff](https://github.com/orhun/git-cliff)** – Fast, customizable changelog generator.
 * **[versions-finder](https://github.com/neblabs/versions-finder)** – CLI utility to resolve target Git version tags. Automatically installed using the installed bellow.
+
+This tool also requires that you use conventional commits.
 
 ## How It Works
 
@@ -43,7 +45,11 @@ sudo chmod +x "$HOME"/.local/bin/wp-changelog-injector
 
 ## Configuration
 
-Create a `wp-cliff.toml` configuration file in your project root to control the WordPress output format:
+This tool creates a wp-cliff.toml file with some nice defaults for readme file changelogs. This default file only takes the commits with prefixes: fix:, feat: and perf:. It will also check for a line using release-note:, and will use that in place of the commit header.
+
+
+
+You can optionally create a `wp-cliff.toml` configuration file in your project root to control the WordPress readme file output format. Example:
 
 ```toml
 [git]
