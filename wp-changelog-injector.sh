@@ -88,7 +88,7 @@ body = """
 **{{ group | replace(from="1_", to="") | replace(from="2_", to="") | replace(from="3_", to="") }}**
 
 {% for commit in commits -%}
-    {%- set rn_footers = commit.footers | filter(attribute="token", value="release-note") -%}
+    {%- set rn_footers = commit.footers | default(value=[]) | filter(attribute="token", value="release-note") -%}
     {%- if rn_footers | length > 0 -%}
 + {{ rn_footers[0].value | trim | upper_first }}
     {%- elif commit.body -%}
@@ -132,7 +132,7 @@ body = """
 ### {{ group | replace(from="1_", to="") | replace(from="2_", to="") | replace(from="3_", to="") }}
 
 {% for commit in commits -%}
-    {%- set rn_footers = commit.footers | filter(attribute="token", value="release-note") -%}
+    {%- set rn_footers = commit.footers | default(value=[]) | filter(attribute="token", value="release-note") -%}
     {%- if rn_footers | length > 0 -%}
 - {{ rn_footers[0].value | trim | upper_first }}
     {%- elif commit.body -%}
