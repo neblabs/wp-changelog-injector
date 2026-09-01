@@ -52,7 +52,7 @@ IFS='' read -r -d '' wpTomlConfig <<'EOF'
 [git]
 commit_parsers = [
   { message = "^feat", group = "Features" },
-  { message = "^fix", group = "Bug Fixes" },
+  { message = "^fix", group = "Fixes & Improvements" },
   { message = "^perf", group = "Performance Improvements" },
   # Optional bulletproof catch-all: explicitly skip anything else
   { message = "^.*", skip = true }
@@ -70,7 +70,22 @@ body = """
 {% for group, commits in commits | group_by(attribute="group") -%}
 **{{ group | replace(from="1_", to="") | replace(from="2_", to="") | replace(from="3_", to="") }}**
 {% for commit in commits -%}
-* {{ commit.message | upper_first }}
+    {#- 1. Check for release-note trailer -#}
+    {%- set release_note = "" -%}
+    {%- for footer in commit.footers -%}
+        {%- if footer.token == "release-note" or footer.token == "release-note" -%}
+            {%- set_global release_note = footer.value -%}
+        {%- endif -%}
+    {%- endfor -%}
+
+    {#- 2. Render the best available text -#}
+    {%- if release_note != "" -%}
+    + {{ release_note | upper_first }}
+    {%- elif commit.body -%}
+    + {{ commit.body | split(pat="\n") | first | trim | upper_first }}
+    {%- else -%}
+    + {{ commit.message | upper_first }}
+    {%- endif %}
 {% endfor -%}
 
 {% endfor -%}
