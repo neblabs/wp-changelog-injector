@@ -71,18 +71,11 @@ body = """
 
 {% for group, commits in commits | group_by(attribute="group") %}
 **{{ group | replace(from="1_", to="") | replace(from="2_", to="") | replace(from="3_", to="") }}**
-{% for commit in commits -%}
-    {#- Extract release-note trailer -#}
-    {%- set release_note = "" -%}
-    {%- for footer in commit.footers -%}
-        {%- if footer.token | lower == "release-note" -%}
-            {%- set_global release_note = footer.value -%}
-        {%- endif -%}
-    {%- endfor -%}
 
-    {#- Render note or fallback -#}
-    {%- if release_note != "" -%}
-+ {{ release_note | trim | upper_first }}
+{% for commit in commits -%}
+    {%- set rn_footers = commit.footers | filter(attribute="token", value="release-note") -%}
+    {%- if rn_footers | length > 0 -%}
++ {{ rn_footers[0].value | trim | upper_first }}
     {%- elif commit.body -%}
 + {{ commit.body | split(pat="\n") | first | trim | upper_first }}
     {%- else -%}
