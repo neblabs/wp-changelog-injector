@@ -50,9 +50,11 @@ fi
 
 IFS='' read -r -d '' wpTomlConfig <<'EOF'
 [git]
+conventional_commits = true
+filter_unconventional = false
 commit_parsers = [
   { message = "^feat", group = "Features" },
-  { message = "^fix", group = "Fixes & Improvements" },
+  { message = "^fix", group = "Fixes and Improvements" },
   { message = "^perf", group = "Performance Improvements" },
   # Optional bulletproof catch-all: explicitly skip anything else
   { message = "^.*", skip = true }
@@ -61,34 +63,33 @@ commit_parsers = [
 [changelog]
 header = "== Changelog ==\n"
 body = """
-{% if version -%}
+{% if version %}
 = {{ version | trim_start_matches(pat="v") }} =
-{% else -%}
+{% else %}
 = Unreleased =
-{% endif -%}
+{% endif %}
 
-{% for group, commits in commits | group_by(attribute="group") -%}
+{% for group, commits in commits | group_by(attribute="group") %}
 **{{ group | replace(from="1_", to="") | replace(from="2_", to="") | replace(from="3_", to="") }}**
 {% for commit in commits -%}
-    {#- 1. Check for release-note trailer -#}
+    {#- Extract release-note trailer -#}
     {%- set release_note = "" -%}
     {%- for footer in commit.footers -%}
-        {%- if footer.token == "release-note" or footer.token == "release-note" -%}
+        {%- if footer.token | lower == "release-note" -%}
             {%- set_global release_note = footer.value -%}
         {%- endif -%}
     {%- endfor -%}
 
-    {#- 2. Render the best available text -#}
+    {#- Render note or fallback -#}
     {%- if release_note != "" -%}
-    + {{ release_note | upper_first }}
++ {{ release_note | trim | upper_first }}
     {%- elif commit.body -%}
-    + {{ commit.body | split(pat="\n") | first | trim | upper_first }}
++ {{ commit.body | split(pat="\n") | first | trim | upper_first }}
     {%- else -%}
-    + {{ commit.message | upper_first }}
++ {{ commit.message | trim | upper_first }}
     {%- endif %}
-{% endfor -%}
-
-{% endfor -%}
+{% endfor %}
+{% endfor %}
 """
 trim = false
 EOF
