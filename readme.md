@@ -1,5 +1,7 @@
 # WP Changelog Injector
 
+todo: docs need to be updated from the latest breaking changing commit
+
 A lightweight Bash utility to automatically generate and inject `git-cliff` changelog entries into WordPress-formatted `readme.md` / `readme.txt` files and standard `changelog.md` files upon release using conventional commits.
 
 ## Requirements
