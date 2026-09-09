@@ -90,7 +90,9 @@ body = """
 {% for commit in commits -%}
     {%- set rn_footers = commit.footers | default(value=[]) | filter(attribute="token", value="release-note") -%}
     {%- if rn_footers | length > 0 -%}
-+ {{ rn_footers[0].value | trim | upper_first }}
+        {%- for footer in rn_footers %}
++ {{ footer.value | trim | upper_first }}
+        {%- endfor -%}
     {%- elif commit.body -%}
 + {{ commit.body | split(pat="\n") | first | trim | upper_first }}
     {%- else -%}
