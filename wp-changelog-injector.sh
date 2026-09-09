@@ -112,11 +112,10 @@ commit_parsers = [
   { message = "^feat", group = "Features" },
   { message = "^fix", group = "Fixes and Improvements" },
   { message = "^perf", group = "Performance Improvements" },
-  { message = "^docs", group = "Performance Improvements" },
-  { message = "^build", group = "Performance Improvements" },
-  { message = "^refactor", group = "Performance Improvements" },
-  { message = "^style", group = "Performance Improvements" },
-  { message = "^test", group = "Performance Improvements" },
+  { message = "^docs", group = "Docs and labels" },
+  { message = "^build", group = "Build" },
+  { message = "^refactor", group = "Refactorings" },
+  { message = "^test", group = "Tests" },
   # left: { message = "^ci", group = "Performance Improvements" },
   { message = "^.*", skip = true }
 ]
