@@ -68,9 +68,9 @@ IFS='' read -r -d '' wpTomlConfig <<'EOF'
 conventional_commits = true
 filter_unconventional = false
 commit_parsers = [
-  { message = "^feat", group = "Features" },
-  { message = "^fix", group = "Fixes and Improvements" },
-  { message = "^perf", group = "Performance Improvements" },
+  { message = "^feat", group = "1_Features" },
+  { message = "^fix", group = "2_Bug Fixes" },
+  { message = "^perf", group = "3_Performance Improvements" },
   # Optional bulletproof catch-all: explicitly skip anything else
   { message = "^.*", skip = true }
 ]
@@ -78,31 +78,37 @@ commit_parsers = [
 [changelog]
 header = "== Changelog ==\n"
 body = """
-{% if version %}
-= {{ version | trim_start_matches(pat="v") }} =
-{% else %}
+{%- if timestamp and timestamp != 0 -%}
+    {%- set release_date = timestamp | date(format="%B %d, %Y") -%}
+{%- elif commits | length > 0 -%}
+    {%- set release_date = commits[0].author.timestamp | date(format="%B %d, %Y") -%}
+{%- else -%}
+    {%- set release_date = "" -%}
+{%- endif -%}
+{% if version -%}
+= {{ version | trim_start_matches(pat="v") }}{% if release_date %} - {{ release_date }}{% endif %} =
+{% else -%}
 = Unreleased =
-{% endif %}
-
+{% endif -%}
 {% for group, commits in commits | group_by(attribute="group") %}
 **{{ group | replace(from="1_", to="") | replace(from="2_", to="") | replace(from="3_", to="") }}**
-
 {% for commit in commits -%}
     {%- set rn_footers = commit.footers | default(value=[]) | filter(attribute="token", value="release-note") -%}
     {%- if rn_footers | length > 0 -%}
         {%- for footer in rn_footers %}
-+ {{ footer.value | trim | upper_first }}
+* {{ footer.value | trim | upper_first }}
         {%- endfor -%}
     {%- elif commit.body -%}
-+ {{ commit.body | split(pat="\n") | first | trim | upper_first }}
+* {{ commit.body | split(pat="\n") | first | trim | upper_first }}
     {%- else -%}
-+ {{ commit.message | trim | upper_first }}
+* {{ commit.message | trim | upper_first }}
     {%- endif %}
-{% endfor %}
+{% endfor -%}
 {% endfor %}
 """
 trim = false
 EOF
+
 
 IFS='' read -r -d '' mdTomlConfig <<'EOF'
 [git]
@@ -160,8 +166,8 @@ if [[ "$type" == 'wp' ]]; then
         whichTag=--previous-or-latest
     fi
 
-    tagRange="$(versions-finder stable "$whichTag")"..HEAD
-
+    # tagRange="$(versions-finder stable "$whichTag")"..HEAD
+    tagRange="$(git tag --sort=v:refname | head -n 1)"..HEAD # all by default
     if ! [[ -s "$configFile" ]]; then
         echo "$wpTomlConfig" > "$configFile"
     fi
