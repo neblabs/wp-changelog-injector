@@ -67,6 +67,7 @@ IFS='' read -r -d '' wpTomlConfig <<'EOF'
 [git]
 conventional_commits = true
 filter_unconventional = false
+tag_pattern = "v?[0-9]+\\.[0-9]+\\.[0-9]+$"
 commit_parsers = [
   { message = "^feat", group = "1_Features" },
   { message = "^fix", group = "2_Bug Fixes" },
@@ -114,6 +115,7 @@ IFS='' read -r -d '' mdTomlConfig <<'EOF'
 [git]
 conventional_commits = true
 filter_unconventional = false
+tag_pattern = "v?[0-9]+\\.[0-9]+\\.[0-9]+$"
 commit_parsers = [
   { message = "^feat", group = "Features" },
   { message = "^fix", group = "Fixes and Improvements" },
